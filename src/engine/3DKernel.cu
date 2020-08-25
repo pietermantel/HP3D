@@ -1,24 +1,16 @@
 extern "C"
-__global__ void add(int n, float *a, float *b, float *sum)
+__global__ void applyRotationMatrix(int n, double *matrix, double **pointArray, double **out)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	if (i<n)
+	if (i < n)
 	{
-		sum[i] = a[i] + b[i];
-	}
-
-}
-__global__ void applyRotationMatrix(int n, double *matrix, double **pointArray, double **out) 
-{
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	if(i < n)
-	{
-		double[] point = pointArray[i];
+		double *point = pointArray[i];
 		double x = matrix[0] * point[0] + matrix[1] * point[1] + matrix[2] * point[2];
 		double y = matrix[3] * point[0] + matrix[4] * point[1] + matrix[5] * point[2];
 		double z = matrix[6] * point[0] + matrix[7] * point[1] + matrix[8] * point[2];
 		out[i][0] = x;
 		out[i][1] = y;
 		out[i][2] = z;
+
 	}
 }
