@@ -34,7 +34,9 @@ public class Time implements Runnable {
 				renderAmount++;
 			}
 			if (System.nanoTime() - 1000000000 > lastSecond) {
-				
+				TPS = tickAmount;
+				FPS = renderAmount;
+				System.out.println("TPS: " + TPS + ", FPS: " + FPS);
 			}
 		}
 	}

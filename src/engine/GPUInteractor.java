@@ -27,8 +27,8 @@ public class GPUInteractor {
 	public GPUInteractor() {
 		initialize();
 	}
-
-	public static void main(String... args) {
+	
+	public static void test() {
 		GPUInteractor gpu = new GPUInteractor();
 		int numPoints = 100000;
 		Point3D[] points = new Point3D[numPoints];
@@ -37,6 +37,10 @@ public class GPUInteractor {
 		gpu.applyRotationMatrices(new double[] { 2, -3, 1, 0.5, 3, -1, -4, 2, 1.5 }, points);
 		System.out.println("Time elapsed: " + (System.nanoTime() - timeBefore) / 1000000);
 	}
+
+//	public static void main(String... args) {
+//		test();
+//	}
 
 	public void initialize() {
 		// Enable exceptions
