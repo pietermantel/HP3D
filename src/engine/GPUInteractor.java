@@ -30,7 +30,7 @@ public class GPUInteractor {
 
 	public static void main(String... args) {
 		GPUInteractor gpu = new GPUInteractor();
-		gpu.applyRotationMatrices(new double[] { 2, 0, 0, 0, 2, 0, 0, 0, 2 }, new Point3D[] {new Point3D(1, 1, 1)});
+		gpu.applyRotationMatrices(new double[] { 2, 0, 0, 0, 2, 0, 0, 0, 2 }, new Point3D[] {new Point3D(3, 2, 5)});
 	}
 
 	public void initialize() {
@@ -76,7 +76,7 @@ public class GPUInteractor {
 		System.out.println(devicePointsPtr);
 
 		// Allocate and create pointers to all points
-		long pointSize = points.length * Sizeof.DOUBLE;
+		long pointSize = 3 * Sizeof.DOUBLE;
 		CUdeviceptr[] pointsDevicePointers = new CUdeviceptr[points.length];
 		for (int i = 0; i < points.length; i++) {
 			// Allocate and copy a point to device
