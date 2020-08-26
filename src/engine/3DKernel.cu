@@ -14,3 +14,21 @@ __global__ void applyRotationMatrix(int n, double *matrix, double **pointArray, 
 		output[2] = z;
 	}
 }
+
+__global__ void rasterize(int numPoints, int screenWidth, int screenHeight, double fov, double *camPos, double *matrix, double **pointArray, double *out) {
+	//Calculate thread index
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	if(i < n) 
+	{
+		double *point = pointArray[i];
+		double *modifiedPoint = new double[3];
+		for(int i = 0; i < 3; i++) 
+		{
+			modifiedPoint[i] = point[i] - camPos[i];
+		}
+		for(int i = 0; i < 3; i++) 
+		{
+			modifiedPoint[i] = matrix[i] * modifiedPoint[0] + matrix[i + 1] * modifiedPoint[1] + matrix[i + 2] * modifiedPoint[2];
+		}
+	}
+}
