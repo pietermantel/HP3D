@@ -30,7 +30,12 @@ public class GPUInteractor {
 
 	public static void main(String... args) {
 		GPUInteractor gpu = new GPUInteractor();
-		gpu.applyRotationMatrices(new double[] { 2, 0, 0, 0, 2, 0, 0, 0, 2 }, new Point3D[] {new Point3D(3, 2, 5)});
+		int numPoints = 100000;
+		Point3D[] points = new Point3D[numPoints];
+		for (int i = 0; i < numPoints; i++) points[i] = new Point3D(Math.random(), Math.random(), Math.random());
+		long timeBefore = System.nanoTime();
+		gpu.applyRotationMatrices(new double[] { 2, -3, 1, 0.5, 3, -1, -4, 2, 1.5 }, points);
+		System.out.println("Time elapsed: " + (System.nanoTime() - timeBefore) / 1000000);
 	}
 
 	public void initialize() {
@@ -58,22 +63,19 @@ public class GPUInteractor {
 		int numElements = points.length;
 
 		int blockSizeX = 256;
-		int gridSizeX = (int) Math.ceil(numElements / blockSizeX);
+		int gridSizeX = (int) Math.ceil((double) numElements / blockSizeX);
+		System.out.println(gridSizeX);
 
 		// Allocate and copy rotation matrix to device
 		long rotationMatrixSize = rotationMatrix.length * Sizeof.DOUBLE;
-		System.out.println(rotationMatrixSize);
 		CUdeviceptr deviceRotationMatrix = new CUdeviceptr();
 		cuMemAlloc(deviceRotationMatrix, rotationMatrixSize);
 		cuMemcpyHtoD(deviceRotationMatrix, Pointer.to(rotationMatrix), rotationMatrixSize);
-		System.out.println(deviceRotationMatrix);
 
 		// Allocate pointer to points array
 		long devicePointsPointersSize = points.length * Sizeof.POINTER;
-		System.out.println(devicePointsPointersSize);
 		CUdeviceptr devicePointsPtr = new CUdeviceptr();
 		cuMemAlloc(devicePointsPtr, devicePointsPointersSize);
-		System.out.println(devicePointsPtr);
 
 		// Allocate and create pointers to all points
 		long pointSize = 3 * Sizeof.DOUBLE;
@@ -115,8 +117,6 @@ public class GPUInteractor {
 		Pointer kernelParameters = Pointer.to(Pointer.to(new int[] { numElements }), Pointer.to(deviceRotationMatrix),
 				Pointer.to(devicePointsPtr), Pointer.to(deviceOutput));
 		
-		gridSizeX = 1;
-		blockSizeX = 1;
 		cuLaunchKernel(function,
 				gridSizeX, 1, 1,
 				blockSizeX, 1, 1,
@@ -128,12 +128,12 @@ public class GPUInteractor {
 		for (int i = 0; i < points.length; i++) {
 			double[] currentValues = points[i].getValues();
 			CUdeviceptr currentPtr = outputDevicePointers[i];
-			cuMemcpyDtoH(Pointer.to(currentValues), currentPtr, deviceOutputPointersSize);
+			cuMemcpyDtoH(Pointer.to(currentValues), currentPtr, pointSize);
 			cuMemFree(currentPtr);
 			cuMemFree(pointsDevicePointers[i]);
-			for(int j = 0; j < currentValues.length; j++) {
-				System.out.println(currentValues[j]);
-			}
+//			for(int j = 0; j < currentValues.length; j++) {
+//				System.out.println(currentValues[j]);
+//			}
 		}
 	}
 

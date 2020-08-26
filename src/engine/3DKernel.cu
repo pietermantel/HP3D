@@ -12,6 +12,5 @@ __global__ void applyRotationMatrix(int n, double *matrix, double **pointArray, 
 		output[0] = x;
 		output[1] = y;
 		output[2] = z;
-
 	}
 }
